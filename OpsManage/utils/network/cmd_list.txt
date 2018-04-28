@@ -1,0 +1,19 @@
+acl name testyi1-5M advance
+rule  permit ip source 2.1.1.1 0
+rule  permit ip destination 2.1.1.1 0
+rule  permit ip source 3.2.2.2 0
+rule  permit ip destination 3.2.2.2 0
+commit
+quit
+traffic classifier class_testyi1-5M
+if-match acl name testyi1-5M
+commit
+quit
+traffic behavior behavior_testyi1-5M
+car cir 5120 cbs 10240 green pass red discard
+commit
+quit
+traffic policy policy_dns
+classifier class_testyi1-5M behavior behavior_testyi1-5M precedence 509
+commit
+quit

@@ -1,0 +1,16 @@
+acl name @GROUP advance
+@RULES
+commit
+quit
+traffic classifier class_@GROUP
+if-match acl name @GROUP
+commit
+quit
+traffic behavior behavior_@GROUP
+car cir @WIDTH_MIN cbs @WIDTH_MAX green pass red discard
+commit
+quit
+traffic policy policy_dns
+classifier class_@GROUP behavior behavior_@GROUP precedence @NUMBER
+commit
+quit

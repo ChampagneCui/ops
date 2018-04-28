@@ -1,0 +1,90 @@
+{% extends 'index.html' %}
+{% block page-content %}
+<div id="page-wrapper">
+    <div class="row">
+         <div class="col-lg-12">
+              <h1 class="page-header"><i class="fa fa-gears"></i><code>网络</code>脚本管理</h1>
+         </div>
+                <!-- /.col-lg-12 -->
+    </div>
+	<div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+ 						<i class="fa    fa-gears"></i>脚本执行
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                <legend><i class="fa  fa-paper-plane"></i>网络设备</legend>
+                                    <form  method="post" id="ansibleModelRun" >  {% csrf_token %}
+                                        <div class="form-group">
+                                           <label>QOS设备组</label>
+                                           <select name="qos_groupid" id="qos_groupid" style="width: 200px; text-align: c<F12>enter;">
+                                           {% for i in qos_groupname %}
+                                              <option value={{ i.id }}>{{ i.groupname }}</option>
+                                           {% endfor %}
+                                           </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>组名</label>
+                                            <input class="form-control" name="groupname" id="groupnamp" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>IP</label>
+                                            <input class="form-control" name="iplist" id="iplist" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>带宽</label>
+                                            <input name="width" id="width" required>
+                                            <span>M</span>
+                                        </div>
+		                                <input type="button" class="btn btn-default" id='ajax_submit' value="运行">
+                                </div>                            
+                                <div class="col-lg-6">
+                                    <legend><i class="fa  fa-paper-plane-o"></i>执行结果</legend>
+									<pre>
+				                        <div id="result">
+				                        </div>
+				                    </pre>                                      
+                                <!-- /.col-lg-6 (nested) -->
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+</div>
+
+
+<script type="text/javascript">
+    $('#ajax_submit').click(function () {
+        $('#result').text('服务器正在处理，请稍等。。。');
+        document.getElementById('ajax_submit').disabled = true;
+        $.ajax({
+            url:"/network-qos/",
+            type:"POST",
+            data: {
+                "qos_groupid":$("#qos_groupid").val(),
+                "groupname":$("#groupname").val(),
+                "iplist":$("#iplist").val(),
+                "width":$("#width").val()
+            },
+            success: function (data) {
+                $('#result').text(data);
+                document.getElementById('ajax_submit').disabled = false;
+            }
+        })
+    });
+
+
+
+{% if errorInfo %}
+	window.wxc.xcConfirm("{{errorInfo}}", window.wxc.xcConfirm.typeEnum.error);
+{% endif %}
+</script>
+
+{% endblock %}

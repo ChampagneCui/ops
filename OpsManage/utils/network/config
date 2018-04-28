@@ -1,0 +1,5 @@
+[Config]
+sw_type: huawei
+sw_list_file: sw_list.txt
+cmd_list_file: cmd_list.txt
+thread_count: 2
