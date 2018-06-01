@@ -16,13 +16,15 @@ Including another URLconf
 
 from django.conf.urls import url
 from django.contrib import admin
-from OpsManage.views import (index,users,network)
+from OpsManage.views import index,users,network,ansible_feature
 from OpsManage.restfull import users_api
 
 
 
 urlpatterns = [
     url(r'^$',index.index),
+    url(r'^apps/model/$', ansible_feature.apps_model),
+    url(r'^apps/run/$',ansible_feature.ansible_run),
     url(r'^admin/', admin.site.urls),
     url(r'^login/',index.login),  
     url(r'^logout',index.logout),
@@ -34,6 +36,6 @@ urlpatterns = [
     url(r'^group/(?P<gid>[0-9]+)/$',users.group),
     url(r'^network-qos/', network.qos),
     url(r'^api/user/$', users_api.user_list), 
-    url(r'^api/user/(?P<id>[0-9]+)/$',users_api.user_detail),
+    url(r'^api/user/(?P<id>[0-9]+)/$',users_api.user_detail)
 ]
 

@@ -11,44 +11,46 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import djcelery
+from celery import  platforms
 from kombu import Queue,Exchange
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ''' celery config '''
-# djcelery.setup_loader()
-# BROKER_URL = 'redis://127.0.0.1:6379/4'
-# CELERY_RESULT_BACKEND = 'djcelery.backends.database.DatabaseBackend'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TASK_SERIALIZER='pickle'
-# CELERY_ACCEPT_CONTENT = ['pickle','json']
-# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-# CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
-# CELERYD_MAX_TASKS_PER_CHILD = 40
-# CELERY_TRACK_STARTED = True
-# CELERY_TIMEZONE='Asia/Shanghai'
-# platforms.C_FORCE_ROOT = True
+djcelery.setup_loader()
+BROKER_URL = 'redis://127.0.0.1:6379/4'
+CELERY_RESULT_BACKEND = 'djcelery.backends.database.DatabaseBackend'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER='pickle'
+CELERY_ACCEPT_CONTENT = ['pickle','json']
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
+CELERYD_MAX_TASKS_PER_CHILD = 40
+CELERY_TRACK_STARTED = True
+CELERY_TIMEZONE='Asia/Shanghai'
+platforms.C_FORCE_ROOT = True
 
 #celery route config
-#CELERY_IMPORTS = ("OpsManage.tasks.assets","OpsManage.tasks.ansible",
-#                  "OpsManage.tasks.cron","OpsManage.tasks.deploy",
-#                  "OpsManage.tasks.sql","OpsManage.tasks.sched")
-#CELERY_QUEUES = (
-#    Queue('default',Exchange('default'),routing_key='default'),
-#    Queue('ansible',Exchange('ansible'),routing_key='ansible_#'),
-#)
-#CELERY_ROUTES = {
-#    'OpsManage.tasks.ansible.AnsibleScripts':{'queue':'ansible','routing_key':'ansible_scripts'},
-#    'OpsManage.tasks.ansible.AnsiblePlayBook':{'queue':'ansible','routing_key':'ansible_playbook'},
-#}
-#CELERY_DEFAULT_QUEUE = 'default'
-#CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-#CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_IMPORTS = ("OpsManage.tasks.assets","OpsManage.tasks.ansible",
+                  "OpsManage.tasks.cron","OpsManage.tasks.deploy",
+                  "OpsManage.tasks.sql","OpsManage.tasks.sched")
+CELERY_QUEUES = (
+    Queue('default',Exchange('default'),routing_key='default'),
+    Queue('ansible',Exchange('ansible'),routing_key='ansible_#'),
+)
+CELERY_ROUTES = {
+    'OpsManage.tasks.ansible.AnsibleScripts':{'queue':'ansible','routing_key':'ansible_scripts'},
+    'OpsManage.tasks.ansible.AnsiblePlayBook':{'queue':'ansible','routing_key':'ansible_playbook'},
+}
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
 
 
 
-#REDSI_KWARGS_LPUSH = {"host":'127.0.0.1','port':6379,'db':3}
-#REDSI_LPUSH_POOL = None
+REDSI_KWARGS_LPUSH = {"host":'127.0.0.1','port':6379,'db':3}
+REDSI_LPUSH_POOL = None
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -59,6 +61,22 @@ SECRET_KEY = 'kd8f&jx1h^1m-uldfdo3d#10d9mbc-ijjz!tozusy@aw#h+875'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+# Channels settings
+CHANNEL_LAYERS = {
+    "default": {
+       "BACKEND": "asgi_redis.RedisChannelLayer",  # use redis backend
+       "CONFIG": {
+           "hosts": [("localhost", 6379)],  # set redis address
+           "channel_capacity": {
+                                   "http.request": 1000,
+                                   "websocket.send*": 10000,
+                                },
+           "capacity": 10000,
+           },
+       "ROUTING": "OpsManage.routing.channel_routing",  # load routing from our routing.py file
+       },
+}
 
 
 # Application definition
@@ -124,7 +142,7 @@ DATABASES = {
         'NAME':'ops',
         'USER':'ops',
         'PASSWORD':'1234',
-        'HOST':'127.0.0.1'
+        'HOST':'127.0.0.1',
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
