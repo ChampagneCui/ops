@@ -1,10 +1,13 @@
+![Aaron Swartz](https://github.com/ChampagneCui/ops/blob/master/%E6%88%AA%E5%9B%BE/ops1.png)
+![Aaron Swartz](https://github.com/ChampagneCui/ops/blob/master/%E6%88%AA%E5%9B%BE/qos2.png)
 # 功能包括：
+* ansible全功能
 * SSH登录交换机执行qos限制
 * 日志功能
 
 # TODO
 * zabbix添加监控服务器、监控项
-* ansible、ansible-playbook
+* ansible host在线修改、ansible-playbook
 
 ## 开发语言与框架：
  * 编程语言：Python2.7 + HTML + JScripts
